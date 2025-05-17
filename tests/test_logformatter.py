@@ -15,6 +15,8 @@ from scrapy.utils.test import get_crawler
 from tests.mockserver import MockServer
 from tests.spiders import ItemSpider
 
+logger = logging.getLogger(__name__)
+
 
 class CustomItem(Item):
     name = Field()
@@ -110,7 +112,7 @@ class TestLogFormatter:
         assert logkws["level"] == unsupported_value
 
         with pytest.raises(TypeError):
-            logging.log(logkws["level"], "message")
+            logger.log(logkws["level"], "message")
 
     def test_dropitem_custom_log_level(self):
         item = {}

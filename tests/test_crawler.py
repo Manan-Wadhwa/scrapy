@@ -29,6 +29,8 @@ from scrapy.utils.spider import DefaultSpider
 from scrapy.utils.test import get_crawler, get_reactor_settings
 from tests.mockserver import MockServer, get_mockserver_env
 
+logger = logging.getLogger(__name__)
+
 BASE_SETTINGS: dict[str, Any] = {}
 
 
@@ -492,10 +494,10 @@ class TestCrawlerLogging:
         crawler = get_crawler(MySpider)
         assert get_scrapy_root_handler().level == logging.INFO
         info_count = crawler.stats.get_value("log_count/INFO")
-        logging.debug("debug message")
-        logging.info("info message")
-        logging.warning("warning message")
-        logging.error("error message")
+        logger.debug("debug message")
+        logger.info("info message")
+        logger.warning("warning message")
+        logger.error("error message")
 
         logged = log_file.read_text(encoding="utf-8")
 
@@ -522,7 +524,7 @@ class TestCrawlerLogging:
 
         configure_logging()
         get_crawler(MySpider)
-        logging.debug("debug message")
+        logger.debug("debug message")
 
         logged = log_file.read_text(encoding="utf-8")
 
