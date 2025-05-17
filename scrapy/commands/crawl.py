@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from twisted.python.failure import Failure
-
 from scrapy.commands import BaseRunSpiderCommand
 from scrapy.exceptions import UsageError
 
 if TYPE_CHECKING:
     import argparse
+
+    from twisted.python.failure import Failure
 
 
 class Command(BaseRunSpiderCommand):
@@ -33,7 +33,7 @@ class Command(BaseRunSpiderCommand):
         crawl_defer = self.crawler_process.crawl(spname, **opts.spargs)
 
         if getattr(crawl_defer, "result", None) is not None and issubclass(
-            cast(Failure, crawl_defer.result).type, Exception
+            cast("Failure", crawl_defer.result).type, Exception
         ):
             self.exitcode = 1
         else:

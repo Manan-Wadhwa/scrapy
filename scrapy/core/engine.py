@@ -467,7 +467,7 @@ class ExecutionEngine:
         dfd.addErrback(log_failure("Scraper close failure"))
 
         if hasattr(self._slot.scheduler, "close"):
-            dfd.addBoth(lambda _: cast(_Slot, self._slot).scheduler.close(reason))
+            dfd.addBoth(lambda _: cast("_Slot", self._slot).scheduler.close(reason))
             dfd.addErrback(log_failure("Scheduler close failure"))
 
         dfd.addBoth(

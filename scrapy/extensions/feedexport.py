@@ -411,7 +411,7 @@ class FeedSlot:
             self.file = self.storage.open(self.spider)
             if "postprocessing" in self.feed_options:
                 self.file = cast(
-                    IO[bytes],
+                    "IO[bytes]",
                     PostProcessingManager(
                         self.feed_options["postprocessing"],
                         self.file,
@@ -660,7 +660,7 @@ class FeedExporter:
 
     def _load_components(self, setting_prefix: str) -> dict[str, Any]:
         conf = without_none_values(
-            cast(dict[str, str], self.settings.getwithbase(setting_prefix))
+            cast("dict[str, str]", self.settings.getwithbase(setting_prefix))
         )
         d = {}
         for k, v in conf.items():

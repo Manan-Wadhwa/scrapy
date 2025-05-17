@@ -11,8 +11,6 @@ import copy
 from collections.abc import AsyncIterator, Awaitable, Callable
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
 
-from twisted.python.failure import Failure
-
 from scrapy.http import HtmlResponse, Request, Response
 from scrapy.link import Link
 from scrapy.linkextractors import LinkExtractor
@@ -22,6 +20,8 @@ from scrapy.utils.spider import iterate_spider_output
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+
+    from twisted.python.failure import Failure
 
     # typing.Self requires Python 3.11
     from typing_extensions import Self
@@ -78,12 +78,14 @@ class Rule:
     def _compile(self, spider: Spider) -> None:
         # this replaces method names with methods and we can't express this in type hints
         self.callback = cast("CallbackT", _get_method(self.callback, spider))
-        self.errback = cast(Callable[[Failure], Any], _get_method(self.errback, spider))
+        self.errback = cast(
+            "Callable[[Failure], Any]", _get_method(self.errback, spider)
+        )
         self.process_links = cast(
-            ProcessLinksT, _get_method(self.process_links, spider)
+            "ProcessLinksT", _get_method(self.process_links, spider)
         )
         self.process_request = cast(
-            ProcessRequestT, _get_method(self.process_request, spider)
+            "ProcessRequestT", _get_method(self.process_request, spider)
         )
 
 
@@ -130,13 +132,13 @@ class CrawlSpider(Spider):
                 for lnk in rule.link_extractor.extract_links(response)
                 if lnk not in seen
             ]
-            for link in cast(ProcessLinksT, rule.process_links)(links):
+            for link in cast("ProcessLinksT", rule.process_links)(links):
                 seen.add(link)
                 request = self._build_request(rule_index, link)
-                yield cast(ProcessRequestT, rule.process_request)(request, response)
+                yield cast("ProcessRequestT", rule.process_request)(request, response)
 
     def _callback(self, response: Response, **cb_kwargs: Any) -> Any:
-        rule = self._rules[cast(int, response.meta["rule"])]
+        rule = self._rules[cast("int", response.meta["rule"])]
         return self._parse_response(
             response,
             cast("CallbackT", rule.callback),
@@ -145,9 +147,9 @@ class CrawlSpider(Spider):
         )
 
     def _errback(self, failure: Failure) -> Iterable[Any]:
-        rule = self._rules[cast(int, failure.request.meta["rule"])]  # type: ignore[attr-defined]
+        rule = self._rules[cast("int", failure.request.meta["rule"])]  # type: ignore[attr-defined]
         return self._handle_failure(
-            failure, cast(Callable[[Failure], Any], rule.errback)
+            failure, cast("Callable[[Failure], Any]", rule.errback)
         )
 
     async def _parse_response(

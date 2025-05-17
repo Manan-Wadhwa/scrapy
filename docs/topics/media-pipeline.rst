@@ -785,3 +785,15 @@ To enable your custom media pipeline component you must add its class import pat
    ITEM_PIPELINES = {"myproject.pipelines.MyImagesPipeline": 300}
 
 .. _MD5 hash: https://en.wikipedia.org/wiki/MD5
+
+HTTP Status Code Handling
+======================
+
+The Files Pipeline handles various HTTP status codes:
+
+* 200 OK - Normal download
+* 201 Created - Will follow the Location header for the actual file
+* Other codes - Treated as errors
+
+When receiving a 201 status code with a Location header, the pipeline will
+automatically follow the redirect to download the actual file.
